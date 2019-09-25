@@ -10,8 +10,7 @@ html(lang="ja")
     include style
 
   body
-    form.local(method="POST" action=url)
-      input(type="hidden" name="login" value="local")
+    form.local(method="POST" action="/login")
       div Username: 
         input(name="username")
       div Password: 
@@ -19,6 +18,5 @@ html(lang="ja")
       div 
         input(type="submit" value="Login")
     
-    form.twitter(method="POST" action=url)
-      input(type="hidden" name="login" value="twitter")
+    form.twitter(method="POST" action="/login/twitter")
       input(type="submit" value="Login on Twitter")
