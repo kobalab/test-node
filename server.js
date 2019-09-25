@@ -12,6 +12,7 @@ const parser  = require('body-parser');
 
 const passport = require('passport');
 const local    = require('passport-local');
+const flash    = require('connect-flash');
 
 const Passwd = require('./etc/passwd.json');
 
@@ -40,14 +41,16 @@ app.set('view engine', 'pug');
 app.set('views', __dirname + '/views');
 
 app.use(logger('dev'));
+app.use(flash());
 app.use(session({secret:'secret', resave:false, saveUninitialized:false}));
 app.use(parser.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
-app.get('/login', (req, res, next)=>res.render('login'));
+app.get('/login', (req, res, next)=>res.render('login', req.flash()));
 app.post('/login',
     passport.authenticate('local', { successRedirect: '/',
-                                     failureRedirect: '/login' })
+                                     failureRedirect: '/login',
+                                     failureFlash:    '認証エラー'  })
 );
 app.use((req, res, next) =>{
 //    console.log('session:', req.session);
