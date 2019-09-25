@@ -13,10 +13,14 @@ const parser  = require('body-parser');
 const passport = require('passport');
 const local    = require('passport-local');
 
+const Passwd = require('./etc/passwd.json');
+
 passport.use(new local.Strategy((username, password, done)=>{
-    let user = {id: `${username}@local`};
-    if (username && password) return done(null, user);
-    else return done(null, false);
+    if (! username) return done(null, false);
+    let user = Passwd.find(u=>u.id == username && u.passwd == password);
+    user = { id: `${user.id}@local`, name: user.name, icon: user.icon };
+    if (user) return done(null, user);
+    else      return done(null, false);
 }));
 
 passport.serializeUser((user, done)=>{
@@ -42,6 +46,7 @@ app.post('/login',
                                      failureRedirect: '/login' })
 );
 app.use((req, res, next) =>{
+//    console.log('user:', req.user);
     if(! req.user) res.redirect('/login');
     else           next();
 });
