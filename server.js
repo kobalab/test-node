@@ -20,9 +20,8 @@ passport.use(new local.Strategy(
     { usernameField: 'login',
       passwordField: 'passwd' },
     (login, passwd, done)=>{
-        if (! login) return done(null, false);
         let user = Passwd.find(u=>u.id == login && u.passwd == passwd);
-        if (! user)  return done(null, false);
+        if (! user)  return done(null, false, { message: '認証エラー'});
         user = { id: `${user.id}@local`, name: user.name, icon: user.icon };
         return done(null, user);
     }
@@ -46,11 +45,27 @@ app.use(session({secret:'secret', resave:false, saveUninitialized:false}));
 app.use(parser.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
-app.get('/login', (req, res, next)=>res.render('login', req.flash()));
+app.get('/login', (req, res, next)=>{
+    let {login, error} = req.flash();
+//    console.log(error);
+    res.render('login', {login: login && login[0], error: error});
+});
 app.post('/login',
+    (req, res, next)=>{
+        req.flash('login', req.body.login);
+        if (! req.body.login) {
+            req.flash('error', 'Usernameが未入力');
+            res.redirect('/login');
+        }
+        else if (! req.body.passwd) {
+            req.flash('error', 'Passwordが未入力');
+            res.redirect('/login');
+        }
+        else next();
+    },
     passport.authenticate('local', { successRedirect: '/',
                                      failureRedirect: '/login',
-                                     failureFlash:    '認証エラー'  })
+                                     failureFlash:    true      })
 );
 app.use((req, res, next) =>{
 //    console.log('session:', req.session);
