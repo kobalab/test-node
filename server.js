@@ -15,13 +15,17 @@ const local    = require('passport-local');
 
 const Passwd = require('./etc/passwd.json');
 
-passport.use(new local.Strategy((username, password, done)=>{
-    if (! username) return done(null, false);
-    let user = Passwd.find(u=>u.id == username && u.passwd == password);
-    user = { id: `${user.id}@local`, name: user.name, icon: user.icon };
-    if (user) return done(null, user);
-    else      return done(null, false);
-}));
+passport.use(new local.Strategy(
+    { usernameField: 'login',
+      passwordField: 'passwd' },
+    (login, passwd, done)=>{
+        if (! login) return done(null, false);
+        let user = Passwd.find(u=>u.id == login && u.passwd == passwd);
+        user = { id: `${user.id}@local`, name: user.name, icon: user.icon };
+        if (user) return done(null, user);
+        else      return done(null, false);
+    }
+));
 
 passport.serializeUser((user, done)=>{
     done(null, JSON.stringify(user));
