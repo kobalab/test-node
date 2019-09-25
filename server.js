@@ -21,9 +21,9 @@ passport.use(new local.Strategy(
     (login, passwd, done)=>{
         if (! login) return done(null, false);
         let user = Passwd.find(u=>u.id == login && u.passwd == passwd);
+        if (! user)  return done(null, false);
         user = { id: `${user.id}@local`, name: user.name, icon: user.icon };
-        if (user) return done(null, user);
-        else      return done(null, false);
+        return done(null, user);
     }
 ));
 
