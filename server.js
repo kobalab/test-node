@@ -8,6 +8,7 @@ const express = require('express');
 const index   = require('serve-index');
 const logger  = require('morgan');
 const session = require('express-session');
+const parser  = require('body-parser');
 
 const app = express();
 
@@ -20,11 +21,13 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+app.use(parser.urlencoded({extended: false}));
 app.get('/*', (req, res, next)=>{
     if (req.query.login === undefined) return next();
     res.render('login', {url: req.path});
 })
 app.post('/*', (req, res, next)=>{
+    console.log(req.body);
     res.redirect(req.path);
 });
 app.use(express.static('./'));
