@@ -24,10 +24,10 @@ passport.use(new local.Strategy((username, password, done)=>{
 }));
 
 passport.serializeUser((user, done)=>{
-    done(null, user.id);
+    done(null, JSON.stringify(user));
 });
-passport.deserializeUser((id, done)=>{
-    done(null, {id: id});
+passport.deserializeUser((userstr, done)=>{
+    done(null, JSON.parse(userstr));
 });
 
 const app = express();
@@ -46,6 +46,7 @@ app.post('/login',
                                      failureRedirect: '/login' })
 );
 app.use((req, res, next) =>{
+//    console.log('session:', req.session);
 //    console.log('user:', req.user);
     if(! req.user) res.redirect('/login');
     else           next();
