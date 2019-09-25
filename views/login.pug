@@ -1,0 +1,24 @@
+doctype html
+html(lang="ja")
+  
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+
+    title ログイン
+
+    include style
+
+  body
+    form.local(method="POST" action=url)
+      input(type="hidden" name="login" value="local")
+      div Username: 
+        input(name="username")
+      div Password: 
+        input(name="password" type="password")
+      div 
+        input(type="submit" value="Login")
+    
+    form.twitter(method="POST" action=url)
+      input(type="hidden" name="login" value="twitter")
+      input(type="submit" value="Login on Twitter")
