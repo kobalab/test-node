@@ -9,12 +9,20 @@ const index   = require('serve-index');
 const logger  = require('morgan');
 const session = require('express-session');
 const parser  = require('body-parser');
+const flash   = require('connect-flash');
 
 const passport = require('passport');
 const local    = require('passport-local');
-const flash    = require('connect-flash');
+const hatena   = require('passport-hatena');
 
 const Passwd = require('./etc/passwd.json');
+
+passport.serializeUser((user, done)=>{
+    done(null, JSON.stringify(user));
+});
+passport.deserializeUser((userstr, done)=>{
+    done(null, JSON.parse(userstr));
+});
 
 passport.use(new local.Strategy(
     { usernameField: 'login',
@@ -27,12 +35,18 @@ passport.use(new local.Strategy(
     }
 ));
 
-passport.serializeUser((user, done)=>{
-    done(null, JSON.stringify(user));
-});
-passport.deserializeUser((userstr, done)=>{
-    done(null, JSON.parse(userstr));
-});
+passport.use(new hatena.Strategy(
+    require('./etc/hatena.json'),
+    (token, tokenSecret, profile, cb)=>{
+        let user = {
+            id:   profile.id + '@hatena',
+            name: profile.displayName,
+            icon: profile.photos[0].value
+        };
+        cb(null, user);
+    }
+));
+
 
 const app = express();
 
@@ -47,7 +61,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.get('/login', (req, res, next)=>{
     let {login, error} = req.flash();
-//    console.log(error);
     res.render('login', {login: login && login[0], error: error});
 });
 app.post('/login',
@@ -67,9 +80,13 @@ app.post('/login',
                                      failureRedirect: '/login',
                                      failureFlash:    true      })
 );
+app.post('/login/hatena',
+    passport.authenticate('hatena', { scope: ['read_public'] }));
+app.get ('/login/hatena',
+    passport.authenticate('hatena', { failureRedirect: '/login' }),
+    (req, res, next)=>{res.redirect('/')}
+);
 app.use((req, res, next) =>{
-//    console.log('session:', req.session);
-//    console.log('user:', req.user);
     if(! req.user) res.redirect('/login');
     else           next();
 });
