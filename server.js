@@ -60,8 +60,14 @@ app.use(parser.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.get('/login', (req, res, next)=>{
-    let {login, error} = req.flash();
-    res.render('login', {login: login && login[0], error: error});
+    if (req.user) {
+        req.flash();
+        res.render('user', req.user);
+    }
+    else {
+        let {login, error} = req.flash();
+        res.render('login', {login: login && login[0], error: error});
+    }
 });
 app.post('/login',
     (req, res, next)=>{
@@ -76,15 +82,15 @@ app.post('/login',
         }
         else next();
     },
-    passport.authenticate('local', { successRedirect: '/',
+    passport.authenticate('local', { successRedirect: '/login',
                                      failureRedirect: '/login',
                                      failureFlash:    true      })
 );
 app.post('/login/hatena',
     passport.authenticate('hatena', { scope: ['read_public'] }));
 app.get ('/login/hatena',
-    passport.authenticate('hatena', { failureRedirect: '/login' }),
-    (req, res, next)=>{res.redirect('/')}
+    passport.authenticate('hatena', { successRedirect: '/login',
+                                      failureRedirect: '/login' })
 );
 app.use((req, res, next) =>{
     if(! req.user) res.redirect('/login');
