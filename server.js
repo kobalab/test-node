@@ -42,6 +42,14 @@ app.use((req, res, next)=>{
 
 app.use(express.static('./'));
 app.use(index('./', {icons: true, view: 'details'}));
-app.use((req, res)=>res.status(404).send('<h1>Not Found</h1>'))
+app.use((req, res)=>res.status(404).send('<h1>Not Found</h1>'));
 
-app.listen(8000, ()=>console.log('Server listening on http://127.0.0.1:8000'));
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+io.on('connection', socket=>{
+    console.log(socket.handshake);
+});
+
+server.listen(8000,
+    ()=>console.log('Server listening on http://127.0.0.1:8000'));
