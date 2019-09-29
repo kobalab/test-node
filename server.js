@@ -6,7 +6,6 @@
 
 const express = require('express');
 const session = require('express-session');
-const parser  = require('body-parser');
 const flash   = require('connect-flash');
 const index   = require('serve-index');
 const logger  = require('morgan');
@@ -21,7 +20,7 @@ app.set('views', __dirname + '/views');
 app.use(logger('dev'));
 app.use(flash());
 app.use(session({secret:'secret', resave:false, saveUninitialized:false}));
-app.use(parser.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: false}));
 
 app.use(passport.initialize());
 app.use(passport.session());
