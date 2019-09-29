@@ -8,7 +8,6 @@ const express = require('express');
 const index   = require('serve-index');
 const logger  = require('morgan');
 const session = require('express-session');
-const parser  = require('body-parser');
 
 const passport = require('passport');
 const local    = require('passport-local');
@@ -42,7 +41,7 @@ app.set('views', __dirname + '/views');
 app.use(logger('dev'));
 app.use(flash());
 app.use(session({secret:'secret', resave:false, saveUninitialized:false}));
-app.use(parser.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: false}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.get('/login', (req, res, next)=>{
