@@ -5,7 +5,10 @@
 "use strict";
 
 const express = require('express');
-const session = require('express-session');
+const session = require('express-session')({
+                            secret:'secret',
+                            resave:false,
+                            saveUninitialized:false });
 const flash   = require('connect-flash');
 const index   = require('serve-index');
 const logger  = require('morgan');
@@ -19,7 +22,7 @@ app.set('views', __dirname + '/views');
 
 app.use(logger('dev'));
 app.use(flash());
-app.use(session({secret:'secret', resave:false, saveUninitialized:false}));
+app.use(session);
 app.use(express.urlencoded({extended: false}));
 
 app.use(passport.initialize());
@@ -47,8 +50,18 @@ app.use((req, res)=>res.status(404).send('<h1>Not Found</h1>'));
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+const passport_session
+            = require('./lib/socket.io-passport-session')(session, passport);
+io.use(passport_session.express_session);
+io.use(passport_session.passport_initialize);
+io.use(passport_session.passport_session);
+
 io.on('connection', socket=>{
-    console.log(socket.handshake);
+    console.log(socket.request.user)
+    socket.on('hello', msg=>{
+        console.log(socket.request.user);
+        console.log('hello', msg);
+    });
 });
 
 server.listen(8000,
