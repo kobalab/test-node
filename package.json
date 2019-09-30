@@ -29,6 +29,7 @@
     "passport-local": "^1.0.0",
     "pug": "^2.0.4",
     "serve-index": "^1.9.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "socket_io-session": "github:kobalab/socket_io-session"
   }
 }
