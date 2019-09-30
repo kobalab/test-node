@@ -8,6 +8,9 @@ html(lang="ja")
     title ログイン
 
     script(src="/socket.io/socket.io.js")
+    script.
+      var socket = io.connect();
+      socket.emit('hello', { msg: 'Hello, world!' });
 
     include style
 
