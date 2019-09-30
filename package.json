@@ -30,6 +30,6 @@
     "pug": "^2.0.4",
     "serve-index": "^1.9.1",
     "socket.io": "^2.3.0",
-    "socket_io-session": "github:kobalab/socket_io-session"
+    "socket.io-session": "github:kobalab/socket.io-session"
   }
 }

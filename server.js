@@ -50,7 +50,7 @@ app.use((req, res)=>res.status(404).send('<h1>Not Found</h1>'));
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-const socket_io_session = require('socket_io-session')(session, passport);
+const socket_io_session = require('socket.io-session')(session, passport);
 
 io.use(socket_io_session.express_session);
 io.use(socket_io_session.passport_initialize);
