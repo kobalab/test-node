@@ -46,7 +46,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.get('/login', (req, res, next)=>{
     let {login, error} = req.flash();
-//    console.log(error);
     res.render('login', {login: login && login[0], error: error});
 });
 app.post('/login',
@@ -67,8 +66,6 @@ app.post('/login',
                                      failureFlash:    true      })
 );
 app.use((req, res, next) =>{
-//    console.log('session:', req.session);
-//    console.log('user:', req.user);
     if(! req.user) res.redirect('/login');
     else           next();
 });
